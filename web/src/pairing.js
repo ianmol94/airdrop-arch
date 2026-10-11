@@ -23,7 +23,7 @@ export function usePairing() {
         if (!r.ok) return setState("failed");
       }
       const me = await fetch("/api/me");
-      setState(me.ok ? "paired" : "unpaired");
+      setState(me ? (me.ok ? "paired" : "unpaired") : "offline");
     })();
   }, []);
   return state;

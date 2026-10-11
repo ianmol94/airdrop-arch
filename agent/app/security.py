@@ -1,3 +1,4 @@
+import json
 import os
 import hashlib
 import ipaddress
@@ -21,6 +22,18 @@ CONF = Path.home() / ".config" / "airdrop-arch"
 CONF.mkdir(parents=True, exist_ok=True)
 CONF.chmod(0o700)
 CERT, KEY, DB = CONF / "cert.pem", CONF / "key.pem", CONF / "state.db"
+
+def _load_config() -> dict:
+    try:
+        return json.loads((CONF / "config.json").read_text())
+    except (FileNotFoundError, ValueError):
+        return {}
+
+
+_cfg = _load_config()
+PUBLIC_HOST = _cfg.get("host")                       # trusted hostname, if configured
+TLS_CERT = Path(_cfg["cert"]).expanduser() if "cert" in _cfg else CERT
+TLS_KEY = Path(_cfg["key"]).expanduser() if "key" in _cfg else KEY
 
 COOKIE = "airdrop_session"
 PAIR_TTL = 300  # seconds
@@ -189,7 +202,8 @@ def ensure_cert(ip: str) -> str:
 
 # ---------- pairing QR ----------
 def print_pairing(ip: str, port: int):
-    url = f"https://{ip}:{port}/#pair={new_pairing_token()}"
+    host = PUBLIC_HOST or ip
+    url = f"https://{host}:{port}/#pair={new_pairing_token()}"
     qr = qrcode.QRCode()
     qr.add_data(url)
     qr.print_ascii(invert=True)

@@ -161,6 +161,14 @@ function Devices() {
 export default function App() {
   const state = usePairing();
   if (state === "checking") return <p style={{ padding: 16 }}>Loading...</p>;
+  if (state === "offline")
+    return (
+      <main style={{ maxWidth: 560, margin: "0 auto", padding: 16, fontFamily: "sans-serif" }}>
+        <h2>Laptop not reachable</h2>
+        <p>Check that the laptop is on, the airdrop-arch service is running, and Tailscale is connected.</p>
+        <button onClick={() => location.reload()}>Retry</button>
+      </main>
+  );
   if (state !== "paired")
     return (
       <main style={{ maxWidth: 560, margin: "0 auto", padding: 16, fontFamily: "sans-serif" }}>
