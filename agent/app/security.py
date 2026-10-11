@@ -201,8 +201,8 @@ def ensure_cert(ip: str) -> str:
 
 
 # ---------- pairing QR ----------
-def print_pairing(ip: str, port: int):
-    host = PUBLIC_HOST or ip
+def print_pairing(ip: str, port: int, use_lan: bool = False):
+    host = ip if use_lan else (PUBLIC_HOST or ip)
     url = f"https://{host}:{port}/#pair={new_pairing_token()}"
     qr = qrcode.QRCode()
     qr.add_data(url)
