@@ -8,7 +8,7 @@
 ![React](https://img.shields.io/badge/React-61DAFB)
 
 <img src="docs/airdrop_pc.png" alt="airdrop-arch on pc" width="300">
-<img src="docs/airdrop_phone.png" alt="airdrop-arch on phone" width="300">
+<img src="docs/airdrop_phone.png" alt="airdrop-arch on Android" width="300">
 
 A small server runs on your laptop. Your phone opens it in the browser (or as an installed app) to upload files to the laptop and download files from it. Large transfers survive Wi-Fi drops, and every file is checksum-verified.
 
@@ -71,11 +71,35 @@ Scan the QR code with your phone camera. The first time, the browser warns that 
 
 | Command (from `agent/`) | Purpose |
 |---|---|
-| `python pair.py` | Show a pairing QR code for a new device |
+| `python pair.py` | Pairing QR code (uses the Tailscale name if configured) |
+| `python pair.py lan` | Pairing QR code that uses the laptop's LAN IP |
 | `python pair.py list` / `revoke <id>` | List or revoke paired devices |
 | `python send.py <file>` | Push a file to the phone |
 
 Settings: `AIRDROP_DIR` (shared folder, default `~/Share`) and `AIRDROP_PORT` (default `8000`).
+
+### Pair a new device
+
+Every device pairs once. A pairing code works one time and expires after 5 minutes.
+
+| Situation | Command | Tailscale on the device? |
+|---|---|---|
+| Your own device, on any network | `python pair.py` | Yes, signed in to the same Tailscale account |
+| Another device on the same Wi-Fi | `python pair.py lan` | No |
+
+1. On the laptop, run the command from the table (from `agent/`, with the virtualenv active).
+2. On the new device, scan the QR code or type the printed URL.
+3. Name the device when asked. It stays paired from then on.
+4. For a one-off transfer, revoke the device afterwards: `python pair.py list`, then `python pair.py revoke <id>`.
+
+Notes for the LAN route:
+
+- Both devices must be on the same Wi-Fi, and the router must not isolate clients (some guest and campus networks do).
+- The browser shows a certificate warning, because the certificate matches the Tailscale name rather than the IP. Tap **Advanced**, then **Proceed**.
+- Browsers don't offer to install the PWA from an IP address, so use a bookmark instead.
+- The laptop's IP can change. Reserve it in your router, or check it with `ip route get 1.1.1.1`.
+
+Without Tailscale set up, plain `python pair.py` already prints the LAN address.
 
 ### Run as a service
 
@@ -169,10 +193,9 @@ Measured on my own network (replace the blanks with your numbers).
 
 | Test (2 GB file) | Speed |
 |---|---|
-| Phone to laptop, LAN | _ MB/s |
-| Laptop to phone, LAN | _ MB/s |
-| Via Tailscale, direct | _ MB/s |
-| Via Tailscale, DERP relay | _ MB/s |
+| Phone to laptop, LAN | 80 MB/s |
+| Laptop to phone, LAN | 100 MB/s |
+
 
 ## Roadmap
 
