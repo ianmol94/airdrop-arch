@@ -1,5 +1,7 @@
 # airdrop-arch
 
+#Why useful for me ? --> it replaces loading whatsapp web app everytime I want to share something to my self and reduces RAM usage. 
+
 **Wireless file transfer between Arch Linux and Android.** No cloud, no account, no cable.
 
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue)
